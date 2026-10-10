@@ -13,6 +13,7 @@ BASIC TODO:
     implement a quantum algorithm
     use smaller int types and optimize 
     modularize
+    safety rails matrix operations
 
 */
 
@@ -40,25 +41,42 @@ class Matrix
         template <size_t operand_r, size_t operand_c>
         Matrix<r, operand_c> get_product(Matrix<operand_r, operand_c> operand)
         {
-            Matrix product;
+            Matrix<r, operand_c> product;
 
-            for (int i{0}; i < this->rows; i++) 
+            for (size_t i{0}; i < this->rows; i++) 
             {
-                for (int j{0}; j < operand.columns; j++)
+                for (size_t j{0}; j < operand.columns; j++)
                 {
-                    for (int k{j}; k < operand.columns; k++) 
+                    for (size_t k{0}; k < operand.rows; k++) 
                     {
-                        product.array[i][j] += this->array[i][j] * operand.array[j][i];
+                        product.array[i][j] += this->array[i][k] * operand.array[k][j];
                     }
                 }
             }
 
             return product;
         }
-
-        Matrix get_kroneckers_product(const Matrix& operand)
+        
+        template <size_t operand_r, size_t operand_c>
+        Matrix<r * operand_r, c * operand_c> get_kroneckers_product(Matrix<operand_r, operand_c> operand)
         {
-            
+            Matrix<r * operand_r, c * operand_c> product;
+
+            for (size_t i = 0; i < this->rows; i++)
+            {
+                for (size_t j = 0; j < this->columns; j++)
+                {
+                    for (size_t k = 0; k < operand.rows; k++)
+                    {
+                        for (size_t l = 0; l < operand.columns; l++)
+                        {
+                            product.array[i * operand_r + k][j * operand_c + l] = this->array[i][j] * operand.array[k][l];
+                        }
+                    }
+                }
+            }
+
+            return product;
         }
 
         std::string get_shape()
@@ -72,7 +90,7 @@ class Matrix
             {
                 for (int j{0}; j < this->columns; j++)
                 {
-                    char separator = (j % columns == 0) ? '\n' : ' ';
+                    char separator = ((j + 1) % columns == 0) ? '\n' : ' ';
 
                     std::cout << std::to_string(this->array[i][j]) + separator;
                 }
@@ -94,7 +112,11 @@ int main()
 
     std::cout << m.get_shape() << std::endl; */
 
-    Matrix m1(
+
+
+
+
+    /*Matrix m1(
     {
         {5, 1, 2, 3, 1},
         {6, 7, 8, 2, 1},
@@ -114,7 +136,28 @@ int main()
     
     Matrix m3 = m1.get_product(m2);
 
-    m3.print_matrix();
+    m3.print_matrix();*/
+
+
+
+
+    /*Matrix m1(
+    {
+        {1, 1},
+        {1, 1}
+    });
+    
+    
+    Matrix m2(
+    {
+        {1, 0},
+        {0, 1}
+    });
+    
+    Matrix m3 = m1.get_kroneckers_product(m2);
+
+    m3.print_matrix();*/
+
 
     return 0;
 }
