@@ -7,8 +7,6 @@
 
 BASIC TODO:
 
-    implement matrices (and vectors)
-    implement kronecker and matmul
     implement gates
     implement a quantum algorithm
     use smaller int types and optimize 
@@ -98,19 +96,69 @@ class Matrix
         }
 };
 
+template <size_t rows = 2>
+class Qubit : public Matrix<rows, 1>
+{
+    public:
+        Qubit() 
+        {
+            this->array[0][0] = 1; 
+            this->array[1][0] = 0;
+        }
+
+        Qubit(const int (&array)[rows][1]) : Matrix<rows, 1>(array) {}
+};
+
 
 int main()
 {   
-    /* Matrix m(
+
+
+
+    
+
+
+
+
+
+
+
+
+    /*Qubit q0(
         {
-            {5, 1, 2, 3, 1},
-            {6, 7, 8, 2, 1},
-            {5, 5, 5, 5, 5},
-            {5, 1, 2, 4, 2}
+            {0},
+            {0},
+            {0},
+            {1}
         }
     );
 
-    std::cout << m.get_shape() << std::endl; */
+    q0.print_matrix();*/
+
+
+
+   
+    /*Qubit q0;
+
+    q0.print_matrix();*/
+
+
+    /*Matrix m1(
+    {
+        {1, 1},
+        {1, 1}
+    });
+    
+    
+    Matrix m2(
+    {
+        {1, 0},
+        {0, 1}
+    });
+    
+    Matrix m3 = m1.get_kroneckers_product(m2);
+
+    m3.print_matrix();*/
 
 
 
@@ -141,23 +189,19 @@ int main()
 
 
 
-    /*Matrix m1(
-    {
-        {1, 1},
-        {1, 1}
-    });
-    
-    
-    Matrix m2(
-    {
-        {1, 0},
-        {0, 1}
-    });
-    
-    Matrix m3 = m1.get_kroneckers_product(m2);
 
-    m3.print_matrix();*/
 
+
+    /* Matrix m(
+        {
+            {5, 1, 2, 3, 1},
+            {6, 7, 8, 2, 1},
+            {5, 5, 5, 5, 5},
+            {5, 1, 2, 4, 2}
+        }
+    );
+
+    std::cout << m.get_shape() << std::endl; */
 
     return 0;
 }
