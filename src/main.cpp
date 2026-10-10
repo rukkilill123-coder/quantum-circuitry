@@ -1,7 +1,9 @@
+#include <type_traits>
 #include <algorithm>
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <cmath>
 
 /*
 
@@ -9,9 +11,17 @@ BASIC TODO:
 
     implement gates
     implement a quantum algorithm
+    add operator overloading (maybe)
     use smaller int types and optimize 
     modularize
     safety rails matrix operations
+    store on the heap
+    matrix method params are copied, very bad
+    add more comments explaining certain design choices
+    find a better place to store your tests
+    gpu acceleration?
+    mutate vectors?
+    syntax is an eyesore in some places
 
 */
 
@@ -77,6 +87,51 @@ class Matrix
             return product;
         }
 
+        template<typename t>
+        Matrix<r, c> operator+(t operand)
+        {
+            Matrix<r, c> sum;
+
+            if constexpr (std::is_integral_v<t>)
+            {
+                for (int i = 0; i < this->rows; i++)
+                {
+                    for (int j = 0; j < this->columns; j++) 
+                    {
+                        sum.array[i][j] += this->array[i][j] + operand;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < this->rows; i++)
+                {
+                    for (int j = 0; j < this->columns; j++) 
+                    {
+                        sum.array[i][j] += this->array[i][j] + operand.array[i][j];
+                    }
+                }
+            }
+
+            return sum;
+        }
+
+        Matrix<r, c> operator*(int scalar)
+        {
+            Matrix<r, c> scaled;
+
+            for (int i = 0; i < this->rows; i++)
+            {
+                for (int j = 0; j < this->columns; j++)
+                {
+                    scaled.array[i][j] = this->array[i][j] * scalar;
+                }
+            }
+
+            return scaled;
+        }
+
+
         std::string get_shape()
         {
             return std::to_string(this->rows) + "x" + std::to_string(this->columns);
@@ -107,101 +162,38 @@ class Qubit : public Matrix<rows, 1>
         }
 
         Qubit(const int (&array)[rows][1]) : Matrix<rows, 1>(array) {}
+
+        Matrix get_kronecker_power(Matrix base, Matrix base1, unsigned int exp)
+        {
+            if (exp == 2)
+            {
+                return base.get_kroneckers_product(base1);
+            }
+            else
+            {
+                get_kroneckers
+            }
+        }
+
+        Matrix get_hadamard(Matrix input)
+        {
+            unsigned int n = log2(this->rows);
+
+            Matrix<2, 2> H = (1/sqrt(2)) * Matrix(
+                {
+                    {1, 1},
+                    {1, -1}
+                }
+            );
+
+            H_expanded = get_kronecker_power(H, n);
+        }
 };
 
 
 int main()
 {   
 
-
-
     
-
-
-
-
-
-
-
-
-    /*Qubit q0(
-        {
-            {0},
-            {0},
-            {0},
-            {1}
-        }
-    );
-
-    q0.print_matrix();*/
-
-
-
-   
-    /*Qubit q0;
-
-    q0.print_matrix();*/
-
-
-    /*Matrix m1(
-    {
-        {1, 1},
-        {1, 1}
-    });
-    
-    
-    Matrix m2(
-    {
-        {1, 0},
-        {0, 1}
-    });
-    
-    Matrix m3 = m1.get_kroneckers_product(m2);
-
-    m3.print_matrix();*/
-
-
-
-
-
-    /*Matrix m1(
-    {
-        {5, 1, 2, 3, 1},
-        {6, 7, 8, 2, 1},
-        {5, 5, 5, 5, 5},
-        {5, 1, 2, 4, 2}
-    });
-    
-    
-    Matrix m2(
-    {
-        {5, 1, 2, 3, 1},
-        {6, 7, 8, 2, 1},
-        {5, 5, 5, 5, 5},
-        {5, 1, 2, 4, 2},
-        {1, 2, 3, 4, 5}
-    });
-    
-    Matrix m3 = m1.get_product(m2);
-
-    m3.print_matrix();*/
-
-
-
-
-
-
-
-    /* Matrix m(
-        {
-            {5, 1, 2, 3, 1},
-            {6, 7, 8, 2, 1},
-            {5, 5, 5, 5, 5},
-            {5, 1, 2, 4, 2}
-        }
-    );
-
-    std::cout << m.get_shape() << std::endl; */
-
     return 0;
 }
