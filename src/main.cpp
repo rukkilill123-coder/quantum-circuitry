@@ -22,6 +22,8 @@ BASIC TODO:
     gpu acceleration?
     mutate vectors?
     syntax is an eyesore in some places
+    kronecker power not actual method
+
 
 */
 
@@ -33,7 +35,7 @@ class Matrix
         size_t rows{0};
         size_t columns{0};
     
-        int array[r][c];
+        float array[r][c];
 
         Matrix() : rows(r), columns(c)
         {
@@ -41,7 +43,7 @@ class Matrix
         }
         
 
-        Matrix(const int (&array)[r][c]) : rows(r), columns(c)
+        Matrix(const float (&array)[r][c]) : rows(r), columns(c)
         {
             std::copy(&array[0][0], &array[0][0] + r * c, &this->array[0][0]);
         }
@@ -87,6 +89,23 @@ class Matrix
             return product;
         }
 
+        template<size_t base_r, size_t base_c, size_t base1_r, size_t base1_c>
+        auto get_kronecker_power(Matrix<base_r, base_c> base, Matrix<base1_r, base1_c> base1, unsigned int exp)
+        {
+            if (exp == 1)
+            {
+                return base;
+            }
+            else if (exp == 2)
+            {
+                return base.get_kroneckers_product(base1);
+            }
+            else
+            {
+                return get_kronecker_power(base.get_kroneckers_product(base1), base1, exp - 1);
+            }
+        }
+
         template<typename t>
         Matrix<r, c> operator+(t operand)
         {
@@ -116,7 +135,7 @@ class Matrix
             return sum;
         }
 
-        Matrix<r, c> operator*(int scalar)
+        Matrix<r, c> operator*(float scalar)
         {
             Matrix<r, c> scaled;
 
@@ -137,7 +156,7 @@ class Matrix
             return std::to_string(this->rows) + "x" + std::to_string(this->columns);
         }
 
-        void print_matrix()
+        void print()
         {
             for (int i{0}; i < this->rows; i++)
             {
@@ -161,39 +180,27 @@ class Qubit : public Matrix<rows, 1>
             this->array[1][0] = 0;
         }
 
-        Qubit(const int (&array)[rows][1]) : Matrix<rows, 1>(array) {}
+        Qubit(const float (&array)[rows][1]) : Matrix<rows, 1>(array) {}
 
-        Matrix get_kronecker_power(Matrix base, Matrix base1, unsigned int exp)
-        {
-            if (exp == 2)
-            {
-                return base.get_kroneckers_product(base1);
-            }
-            else
-            {
-                get_kroneckers
-            }
-        }
-
-        Matrix get_hadamard(Matrix input)
+        
+        Matrix<rows, 1> get_hadamard()
         {
             unsigned int n = log2(this->rows);
 
-            Matrix<2, 2> H = (1/sqrt(2)) * Matrix(
+            Matrix<2, 2> H = Matrix(
                 {
                     {1, 1},
                     {1, -1}
                 }
-            );
+            ) * (1/sqrt(2));
 
-            H_expanded = get_kronecker_power(H, n);
+            return (H.get_kronecker_power(H, H, n)).get_product(*this);
         }
 };
 
 
 int main()
 {   
-
     
     return 0;
 }
