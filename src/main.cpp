@@ -23,7 +23,7 @@ BASIC TODO:
     mutate vectors?
     syntax is an eyesore in some places
     kronecker power not actual method
-
+    qubit methods should return qubits
 
 */
 
@@ -207,11 +207,16 @@ class Qubit : public Matrix<rows, 1>
 
             return (H.get_kronecker_power<n>()).get_product(*this);
         }
+
+        Matrix<rows, 1> get_CNOT(unsigned int controll, unsigned int target)
+        {
+            
+        }
 };
 
 
 int main()
-{   
-    
+{
+
     return 0;
 }
