@@ -89,20 +89,16 @@ class Matrix
             return product;
         }
 
-        template<size_t base_r, size_t base_c, size_t base1_r, size_t base1_c>
-        auto get_kronecker_power(Matrix<base_r, base_c> base, Matrix<base1_r, base1_c> base1, unsigned int exp)
+        template<size_t exp>
+        auto get_kronecker_power()
         {
-            if (exp == 1)
+            if constexpr (exp == 1)
             {
-                return base;
-            }
-            else if (exp == 2)
-            {
-                return base.get_kroneckers_product(base1);
+                return *this;
             }
             else
             {
-                return get_kronecker_power(base.get_kroneckers_product(base1), base1, exp - 1);
+                return this->get_kroneckers_product(this->get_kronecker_power<exp - 1>());
             }
         }
 
@@ -170,6 +166,20 @@ class Matrix
         }
 };
 
+constexpr unsigned int get_log2(unsigned int base)
+{
+    unsigned int exponent = 0;
+
+    while (base > 1)
+    {
+        base /= 2;
+        exponent++;
+    }
+
+    return exponent;
+}
+
+
 template <size_t rows = 2>
 class Qubit : public Matrix<rows, 1>
 {
@@ -183,9 +193,10 @@ class Qubit : public Matrix<rows, 1>
         Qubit(const float (&array)[rows][1]) : Matrix<rows, 1>(array) {}
 
         
+
         Matrix<rows, 1> get_hadamard()
         {
-            unsigned int n = log2(this->rows);
+            constexpr unsigned int n = get_log2(rows);
 
             Matrix<2, 2> H = Matrix(
                 {
@@ -194,7 +205,7 @@ class Qubit : public Matrix<rows, 1>
                 }
             ) * (1/sqrt(2));
 
-            return (H.get_kronecker_power(H, H, n)).get_product(*this);
+            return (H.get_kronecker_power<n>()).get_product(*this);
         }
 };
 
