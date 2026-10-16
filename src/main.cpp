@@ -11,7 +11,6 @@ BASIC TODO:
 
     implement gates
     implement a quantum algorithm
-    add operator overloading (maybe)
     use smaller int types and optimize 
     modularize
     safety rails matrix operations
@@ -20,11 +19,8 @@ BASIC TODO:
     add more comments explaining certain design choices
     find a better place to store your tests
     gpu acceleration?
-    mutate vectors?
     syntax is an eyesore in some places
-    kronecker power not actual method
-    qubit methods should return qubits
-
+    
 */
 
 template <size_t r, size_t c>
@@ -192,9 +188,9 @@ class Qubit : public Matrix<rows, 1>
 
         Qubit(const float (&array)[rows][1]) : Matrix<rows, 1>(array) {}
 
-        
+        Qubit(Matrix<rows, 1> mat) : Matrix<rows, 1>(mat) {}        
 
-        Matrix<rows, 1> get_hadamard()
+        Qubit<rows> get_hadamard()
         {
             constexpr unsigned int n = get_log2(rows);
 
@@ -208,15 +204,29 @@ class Qubit : public Matrix<rows, 1>
             return (H.get_kronecker_power<n>()).get_product(*this);
         }
 
-        Matrix<rows, 1> get_CNOT(unsigned int controll, unsigned int target)
+        Qubit<rows> get_NOT()
+        {
+            constexpr unsigned int n = get_log2(rows);
+
+            Matrix<2, 2> NOT = Matrix(
+                {
+                    {0, 1},
+                    {1, 0}
+                }
+            );
+
+            return (NOT.get_kronecker_power<n>()).get_product(*this);
+        }
+
+        /*Qubit<rows> get_CNOT(unsigned int controll, unsigned int target)
         {
             
-        }
+        }*/
 };
 
 
 int main()
 {
-
+    
     return 0;
 }
